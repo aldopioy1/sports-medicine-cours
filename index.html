@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دورة الطب الرياضي - الصفحة الرئيسية</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <i class="bi bi-heart-pulse-fill me-2"></i>دورة الطب الرياضي
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('home') }}">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about') }}">عن الدورة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('instructors') }}">المدربون</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('schedule') }}">الجدول الزمني</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('resources') }}">المكتبة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('faq') }}">الأسئلة الشائعة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('contact') }}">اتصل بنا</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    {% if session.get('user_id') %}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                حسابي
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                {% if session.get('is_admin') %}
+                                    <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">لوحة التحكم</a></li>
+                                {% else %}
+                                    <li><a class="dropdown-item" href="{{ url_for('user.dashboard') }}">لوحة التحكم</a></li>
+                                {% endif %}
+                                <li><a class="dropdown-item" href="{{ url_for('user.profile') }}">الملف الشخصي</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('registration.my_registrations') }}">تسجيلاتي</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('user.logout') }}">تسجيل الخروج</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('user.login') }}" class="btn btn-outline-light me-2">تسجيل الدخول</a>
+                        <a href="{{ url_for('user.register') }}" class="btn btn-light">إنشاء حساب</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- رسائل التنبيه -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- القسم الرئيسي -->
+    <section class="hero-section py-5 bg-primary text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">دورة الطب الرياضي المتكاملة</h1>
+                    <p class="lead mb-4">تعلم أساسيات الطب الرياضي والوقاية من الإصابات وطرق العلاج والتأهيل على يد نخبة من المتخصصين</p>
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('course.all_courses') }}" class="btn btn-light btn-lg">استعرض الدورات</a>
+                        <a href="{{ url_for('about') }}" class="btn btn-outline-light btn-lg">اقرأ المزيد</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <img src="{{ url_for('static', filename='img/hero-image.jpg') }}" alt="الطب الرياضي" class="img-fluid rounded shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- مميزات الدورة -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">مميزات الدورة</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon bg-primary text-white rounded-circle mb-3">
+                                <i class="bi bi-person-check-fill"></i>
+                            </div>
+                            <h3 class="card-title h5">مدربون متخصصون</h3>
+                            <p class="card-text">نخبة من المدربين المتخصصين في مجال الطب الرياضي ذوي خبرة واسعة في التعامل مع الرياضيين والإصابات الرياضية.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon bg-primary text-white rounded-circle mb-3">
+                                <i class="bi bi-clipboard2-pulse-fill"></i>
+                            </div>
+                            <h3 class="card-title h5">منهج شامل ومتكامل</h3>
+                            <p class="card-text">منهج تدريبي شامل يجمع بين الجوانب النظرية والتطبيقية، ويغطي جميع جوانب الطب الرياضي.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon bg-primary text-white rounded-circle mb-3">
+                                <i class="bi bi-award-fill"></i>
+                            </div>
+                            <h3 class="card-title h5">شهادة معتمدة</h3>
+                            <p class="card-text">شهادة معتمدة تمنح للمشاركين بعد اجتياز الدورة بنجاح، تعزز فرصهم المهنية في مجال الطب الرياضي.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- الدورات القادمة -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">الدورات القادمة</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="h5 mb-0">دورة الطب الرياضي الأساسية</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <i class="bi bi-calendar-event me-2"></i>
+                                <span>تبدأ في: 15 يونيو 2025</span>
+                            </div>
+                            <div class="mb-3">
+                                <i class="bi bi-geo-alt me-2"></i>
+                                <span>المكان: مركز التدريب الرياضي - الرياض</span>
+                            </div>
+                            <div class="mb-3">
+                                <i class="bi bi-clock me-2"></i>
+                                <span>المدة: 12 أسبوع</span>
+                            </div>
+                            <div class="mb-3">
+                                <i class="bi bi-cash-coin me-2"></i>
+                                <span>السعر: 5000 ريال</span>
+                            </div>
+                            <p class="card-text">دورة شاملة في أساسيات الطب الرياضي تغطي التشريح الوظيفي، الإصابات الرياضية، الإسعافات الأولية، والتأهيل.</p>
+                        </div>
+                        <div class="card-footer bg-white border-0">
+                            <a href="{{ url_for('course.course_details', course_id=1) }}" class="btn btn-primary w-100">التفاصيل والتسجيل</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h3 class="h5 mb-0">دورة إصابات الملاعب المتقدمة</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <i class="bi bi-calendar-event me-2"></i>
+                                <span>تبدأ في: 1 يوليو 2025</span>
+                            </div>
+                            <div class="mb-3">
+                                <i class="bi bi-geo-alt me-2"></i>
+                                <span>المكان: مركز التدريب الرياضي - جدة</span>
+                            </div>
+                            <div class="mb-3">
+                                <i class="bi bi-clock me-2"></i>
+                                <span>المدة: 8 أسابيع</span>
+                            </div>
+                            <div class="mb-3">
+                                <i class="bi bi-cash-coin me-2"></i>
+                                <span>السعر: 4000 ريال</span>
+                            </div>
+                            <p class="card-text">دورة متخصصة في تشخيص وعلاج إصابات الملاعب الشائعة وطرق التعامل معها وإعادة التأهيل.</p>
+                        </div>
+                        <div class="card-footer bg-white border-0">
+                            <a href="{{ url_for('course.course_details', course_id=2) }}" class="btn btn-success w-100">التفاصيل والتسجيل</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h3 class="h5 mb-0">دورة التغذية الرياضية</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <i class="bi bi-calendar-event me-2"></i>
+                                <span>تبدأ في: 10 أغسطس 2025</span>
+                            </div>
+                            <div class="mb-3">
+                                <i class="bi bi-geo-alt me-2"></i>
+                                <span>المكان: مركز التدريب الرياضي - الدمام</span>
+                            </div>
+                            <div class="mb-3">
+                                <i class="bi bi-clock me-2"></i>
+                                <span>المدة: 6 أسابيع</span>
+                            </div>
+                            <div class="mb-3">
+                                <i class="bi bi-cash-coin me-2"></i>
+                                <span>السعر: 3000 ريال</span>
+                            </div>
+                            <p class="card-text">دورة متخصصة في التغذية الرياضية وتأثيرها على الأداء الرياضي والتعافي من الإصابات.</p>
+                        </div>
+                        <div class="card-footer bg-white border-0">
+                            <a href="{{ url_for('course.course_details', course_id=3) }}" class="btn btn-info w-100 text-white">التفاصيل والتسجيل</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="{{ url_for('course.all_courses') }}" class="btn btn-outline-primary">عرض جميع الدورات</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- آراء المشاركين -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">آراء المشاركين السابقين</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex mb-3">
+                                <div class="text-warning">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                            </div>
+                            <p class="card-text">"استفدت كثيراً من دورة الطب الرياضي، حيث قدمت لي معرفة عميقة في مجال الإصابات الرياضية وطرق علاجها. المدربون كانوا على مستوى عالٍ من الاحترافية والخبرة."</p>
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <img src="{{ url_for('static', filename='img/testimonial-1.jpg') }}" alt="صورة المشارك" class="rounded-circle" width="50" height="50">
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">د. أحمد محمد</h6>
+                                    <small class="text-muted">طبيب فريق رياضي</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex mb-3">
+                                <div class="text-warning">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-half"></i>
+                                </div>
+                            </div>
+                            <p class="card-text">"الدورة كانت متكاملة من جميع النواحي، الجانب النظري والعملي. استطعت تطبيق ما تعلمته مباشرة في عملي مع الرياضيين، مما ساهم في تحسين أدائهم وتقليل الإصابات."</p>
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <img src="{{ url_for('static', filename='img/testimonial-2.jpg') }}" alt="صورة المشارك" class="rounded-circle" width="50" height="50">
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">سارة عبدالله</h6>
+                                    <small class="text-muted">أخصائية علاج طبيعي</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex mb-3">
+                                <div class="text-warning">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                            </div>
+                            <p class="card-text">"أنصح بشدة بهذه الدورة لكل مدرب رياضي. لقد غيرت نظرتي للتدريب وكيفية الوقاية من الإصابات. المعلومات كانت قيمة والتطبيقات العملية ساعدتني كثيراً في عملي."</p>
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <img src="{{ url_for('static', filename='img/testimonial-3.jpg') }}" alt="صورة المشارك" class="rounded-circle" width="50" height="50">
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">خالد العمري</h6>
+                                    <small class="text-muted">مدرب رياضي</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- الاشتراك في النشرة البريدية -->
+    <section class="py-5 bg-primary text-white">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="mb-4">اشترك في نشرتنا البريدية</h2>
+                    <p class="lead mb-4">احصل على آخر الأخبار والتحديثات عن دوراتنا القادمة والمقالات العلمية في مجال الطب الرياضي</p>
+                    <form class="row g-3 justify-content-center">
+                        <div class="col-md-8">
+                            <input type="email" class="form-control form-control-lg" placeholder="البريد الإلكتروني">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-light btn-lg w-100">اشتراك</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- تذييل الصفحة -->
+    <footer class="py-5 bg-dark text-white">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="mb-4">دورة الطب الرياضي</h5>
+                    <p>دورة متخصصة في مجال الطب الرياضي تهدف إلى تزويد المشاركين بالمعرفة العلمية والمهارات العملية في مجال الطب الرياضي.</p>
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="#" class="text-white"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="text-white"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="mb-4">روابط سريعة</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{{ url_for('home') }}" class="text-white text-decoration-none">الرئيسية</a></li>
+                        <li class="mb-2"><a href="{{ url_for('about') }}" class="text-white text-decoration-none">عن الدورة</a></li>
+                        <li class="mb-2"><a href="{{ url_for('instructors') }}" class="text-white text-decoration-none">المدربون</a></li>
+                        <li class="mb-2"><a href="{{ url_for('schedule') }}" class="text-white text-decoration-none">الجدول الزمني</a></li>
+                        <li class="mb-2"><a href="{{ url_for('resources') }}" class="text-white text-decoration-none">المكتبة</a></li>
+                        <li class="mb-2"><a href="{{ url_for('faq') }}" class="text-white text-decoration-none">الأسئلة الشائعة</a></li>
+                        <li class="mb-2"><a href="{{ url_for('contact') }}" class="text-white text-decoration-none">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="mb-4">معلومات الاتصال</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-3"><i class="bi bi-geo-alt me-2"></i> مركز التدريب الرياضي، الرياض، المملكة العربية السعودية</li>
+                        <li class="mb-3"><i class="bi bi-telephone me-2"></i> +966 12 345 6789</li>
+                        <li class="mb-3"><i class="bi bi-envelope me-2"></i> info@sports-medicine-course.com</li>
+                        <li class="mb-3"><i class="bi bi-clock me-2"></i> الأحد - الخميس: 9:00 ص - 5:00 م</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2025 دورة الطب الرياضي. جميع الحقوق محفوظة.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-white text-decoration-none me-3">سياسة الخصوصية</a>
+                    <a href="#" class="text-white text-decoration-none">الشروط والأحكام</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
